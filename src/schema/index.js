@@ -11,7 +11,7 @@
 import {
   GraphQLID,
   GraphQLInt,
-  GraphQLList,
+  GraphQLList, GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
 } from 'graphql';
@@ -20,8 +20,8 @@ import {
   fromGlobalId,
   connectionFromArray,
   connectionArgs,
-  connectionDefinitions,
 } from 'graphql-relay';
+import { connectionDefinitions } from './connectionDefinitions'
 
 import { getObjectsByType, getObjectFromTypeAndId } from './apiHelper';
 
@@ -69,7 +69,7 @@ function rootConnection(name, swapiType) {
   const graphqlType = swapiTypeToGraphQLType(swapiType);
   const { connectionType } = connectionDefinitions({
     name,
-    nodeType: graphqlType,
+    nodeType: new GraphQLNonNull(graphqlType),
     connectionFields: () => ({
       totalCount: {
         type: GraphQLInt,
@@ -80,7 +80,7 @@ argument to "first", then fetch the total count so it could display "5 of 83",
 for example.`,
       },
       [swapiType]: {
-        type: new GraphQLList(graphqlType),
+        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(graphqlType))),
         resolve: conn => conn.edges.map(edge => edge.node),
         description: `A list of all of the objects returned in the connection. This is a convenience
 field provided for quickly exploring the API; rather than querying for
@@ -92,7 +92,7 @@ full "{ edges { node } }" version should be used instead.`,
     }),
   });
   return {
-    type: connectionType,
+    type: new GraphQLNonNull(connectionType),
     args: connectionArgs,
     resolve: async (_, args) => {
       const { objects, totalCount } = await getObjectsByType(swapiType);

@@ -11,8 +11,8 @@
 import {
   connectionFromArray,
   connectionArgs,
-  connectionDefinitions,
 } from 'graphql-relay';
+import { connectionDefinitions } from './connectionDefinitions'
 
 import { getObjectsFromUrls } from './apiHelper';
 

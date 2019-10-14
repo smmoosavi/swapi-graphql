@@ -18,13 +18,14 @@ const app = express();
 app.use(cors());
 
 // Requests to /graphql redirect to /
-app.all('/graphql', (req, res) => res.redirect('/'));
+app.all('/', (req, res) => res.redirect('/graphql'));
 
 app.use(
-  '/',
+  '/graphql',
   graphqlHTTP(() => ({
     schema: swapiSchema,
     graphiql: true,
+    
   })),
 );
 
